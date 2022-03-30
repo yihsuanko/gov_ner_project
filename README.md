@@ -94,7 +94,7 @@
 
 ### 模型驗證與結果
 
-驗證過程可以使用transformers所提供的pipeline套件或是自行撰寫符合pytorch or tensorflow的程式碼來預測。
+驗證過程可以直接使用`run_ner.py`，設定`"do_train" : false`, `"do_eval" : false`，並適用預先設定好的模型就可以直接預測，並設定`"return_entity_level_metrics": true`，即可直接產出confusion matrix和各分類的預測數據。也可以使用transformers所提供的pipeline套件或是自行撰寫符合pytorch or tensorflow的程式碼來預測。
 
 1. ckiplab/albert-tiny-chinese 訓練結果
 

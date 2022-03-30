@@ -11,9 +11,7 @@
     - [資料格式轉換](#資料格式轉換)
     - [模型訓練](#模型訓練)
     - [模型驗證與結果](#模型驗證與結果)
-- [資料集說明](#資料集說明)
 - [Tips](#tips)
-- [FAQs](#faqs)
 - [相關資料](#相關資料)
 
 
@@ -49,7 +47,7 @@
     Test | 4683 | 3852 | 7062 | 2269
 
 ### 資料格式轉換
- - 有別於英文版本以word為單位的切割，中文版本使用character來切割，因此在訓練模型前就已經將句子分割完成。(由於tokenizer會將空白自動移除，因此可以透過[MASK]來取代空白)
+ - 有別於英文版本以word為單位的切割，中文版本使用character來切割，因此在訓練模型前就已經將句子分割完成。(由於tokenizer會將空白自動移除，因此可以透過`[MASK]`來取代空白)
  - 將原本的tsv檔案轉存為json檔案，以便後續進行機器學習。
  - 檔案分為 train, validation, test 資料量為 8:1:1
 
@@ -130,6 +128,24 @@ all_occur | 44355 | 35804 | 70591 | 22915
 \>10_occur/all_occur | 0.2010 | 0.6530 | 0.2666 | 0.4855
 
 - 可以看到地點(LOC)和政府組織(GORG)中出現的詞彙大多都由屬於少部分的詞彙，因此應該要將重複10次以上的標籤去除，來看precision和recall會比較準確。
+
+## Tips
+
+- 訓練注意事項 :
+    1. 訓練資料內的空白字元不會被訓練，因此資料預處理時會忽略空白字元的 Token
+        - 預測時可以透過`[MASK]`來取代空白字元的 Token
+    2. 當調高 Epoch數時, 可以使得 Evaluation/F1 上升, 但 Evaluation/Loss 也會因此上升，需要留意。
+    3. Batch size 建議使用3進行訓練, （也可以嘗試4 or 5），但當提升batch size時Evaluation/Loss 也會因此上升。
+    4. 使用pipeline預測時，會造成英文字母無法切分成characters的情況，像是berlin 會分成 "be", "##rlin", 目前pipeline尚未提供解方，因此雖然pipeline比較方便使用，但並不適合在同時含有中英文的文章時使用。
+    5. 使用模型的 Tokenizer 需要帶上 `is_split_into_words=True`, 且將訓練資料的每一個字都視為一個 Token，來進行預測和訓練。
+
+- colab 使用需要注意的地方
+    1. 如果要使用albert-base, bert-base等模型需要多輸入`!pip install -U transformers`這個指令，才能訓練成功。
+    2. 參數的部分不需要有一個檔案，直接在Notebook上更改就行。
+    3. 登入Hugging Face可以直接將結果和參數git到Hugging Face，且可以使用Hugging Face的API，將模型視覺化。
+- NER 準確度存在迷思 :
+  - 準確度高可能是被少數詞彙撐高的, 因為這些詞彙的標記數量多, 於是準確度高
+  - 因此可以將那些常出現的詞彙先踢除，來看precision和recall會必較準確
 
 ## 相關資料
 
